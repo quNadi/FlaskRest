@@ -2,7 +2,19 @@ from flask import jsonify
 from flask_restful import abort,reqparse, Resource
 from backend.models import NoteModel,note_schema,notes_schema
 from app import db
+from utils.auth import validate_token
+import config
+from datetime import datetime
 from flask_cors import cross_origin
+from flask_jwt import jwt_required
+
+
+
+def auth_header_parse(value):
+    name=validate_token(value,config.Config.PUBLIC_KEY)
+    if name is None:
+        abort(404)
+    return name
 
 parser=reqparse.RequestParser(bundle_errors=True)
 parser.add_argument('name', type=str,required=True,help="name is necessary")
@@ -14,10 +26,11 @@ class NotesList(Resource):
         return {'notes': notes_schema.dump(notes)}
         # return jsonify([NoteModel.serialize(note) for note in notes])
 
-    @cross_origin()
+
     def post(self):
         args=parser.parse_args()
-        note_record=NoteModel(name=args['name'], content=args['content'])       # note_record=NoteModel(**data) ???
+        name=auth_header_parse(args['Authorization'])
+        note_record=NoteModel(name=name, content=args['content'],timestamp=datetime.utcnow())       # note_record=NoteModel(**data) ???
         db.session.add(note_record)
         db.session.commit()
         return {'note_record': note_schema.dump(note_record)},201
@@ -36,6 +49,7 @@ class NoteRecord(Resource):
         #db.session()
         return {'note_record': note_schema.dump(note_record)},201
 
+class NoteDelete(Resource):
     def delete(self,note_id):
         note_record=NoteModel.query.filter_by(id=note_id)\
         .first_or_404(description="note is not avaiable")
