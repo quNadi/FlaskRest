@@ -5,7 +5,7 @@ from app import db
 
 from api.tokens import token_auth
 
-@blueprint.route('/users<int:id>', methods=['GET'])
+@blueprint.route('/users/<int:id>', methods=['GET'])
 @token_auth.login_required
 def get_user(id):
     return jsonify(UserModel.query.get_or_404(id).to_json())
@@ -18,7 +18,7 @@ def get_users():
 
 
 @blueprint.route('/users', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def create_user():
     data=request.get_json() or {}
     if 'username' not in data:
