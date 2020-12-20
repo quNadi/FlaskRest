@@ -28,7 +28,22 @@ def get_data():
         result=data_all_schema.dump(all_data)
         return jsonify(result)
 
+@app.route('/datapi/<id>',methods=['PUT'])
+def update_data(id):
+    data=DataModel.query.get(id)
+    name=request.json['name']
+    content=request.json['content']
+    data.name=name
+    data.content=content
+    db.session.commit()
+    return data_schema.jsonify(data)
 
+@app.route('/datapi/<id>',methods=['DELETE'])
+def delete_data(id):
+    data=DataModel.query.get(id)
+    db.session.delete(data)
+    db.session.commit()
+    return data_schema.jsonify(data)
 
 
 if __name__=="__main__":
