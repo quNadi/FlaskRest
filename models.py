@@ -1,22 +1,24 @@
-from app import db
-from flask_restful import fields
+from app import db,ma
+
+
 
 class DataModel(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(20),nullable=False)
-    content=db.Column(db.String(300))
+    content=db.Column(db.Integer)
 
-    def __repr__(self):
-        return f"Data(name={self.name}, content={self.content})"
+    def __init__(self,name,content):
+        self.name=name
+        self.content=content
 
+class DataSchema(ma.Schema):
+    class Meta:
+        fields=('id','name','content')
+
+data_schema=DataSchema()
+data_all_schema=DataSchema(many=True)
 
 db.create_all()
 
 
 
-resource_fields={
-    'id':fields.Integer,
-    'name':fields.String,
-    'content':fields.String
-
-}
