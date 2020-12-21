@@ -1,4 +1,4 @@
-from flask import Flask,request,jsonify
+from flask import Flask,request,jsonify,redirect,render_template
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -13,20 +13,20 @@ ma=Marshmallow(app)
 from models import DataModel,data_schema,data_all_schema
 
 
-@app.route('/datapi',methods=['POST'])
+@app.route('/',methods=['POST'])
 def add_data():
-    name=request.json['name']
-    content=request.json['content']
+    name=request.form['name']
+    content=request.form['content']
     new_data=DataModel(name,content)
     db.session.add(new_data)
     db.session.commit()
     return data_schema.jsonify(new_data)
 
-@app.route('/datapi',methods=['GET'])
+@app.route('/',methods=['GET'])
 def get_data():
         all_data=DataModel.query.all()
         result=data_all_schema.dump(all_data)
-        return jsonify(result)
+        return render_template('index.html',datasets=all_data)
 
 @app.route('/datapi/<id>',methods=['PUT'])
 def update_data(id):
