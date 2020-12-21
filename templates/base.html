@@ -1,11 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>API DATA</title>
-
-</head>
-<body>
-   {% block body %}{% endblock %}
-</body>
-</html>
+{% extends 'bootstrap/base.html' %}
+        {% block navbar %}
+<div class="navbar navbar-default">
+       <h1 style="text-align:center">API data upload</h1>
+</div>
+   {% endblock %}
+{% block content %}
+  <div class="container">
+       {% if datasets|length <1 %}
+       <h3>There are no data sets  </h3>
+       {% else %}
+       <table class="table table-dark">
+           <thead>
+           <tr class="table-secondary">
+               <th>Data</th>
+               <th>Name</th>
+               </tr>
+       </thead>
+               {% for data in datasets %}
+           <thead>
+                <tr class="table-info">
+                    <td class="table-secondary">{{ data.content }}</td>
+                    <td>{{ data.name }}</td>
+                       <td>
+                           <a href="/delete/{{data.id}}">Delete</a>
+                           <br>
+                           <a href="/update/{{data.id}}">Update</a>
+                       </td>
+                   </tr>
+           </thead>
+                   {% endfor %}
+               </table>
+               {% endif %}
+               <div class="form">
+                   <form action="/" method="POST">
+                       <label for="content" class="form-label">Content Data</label>
+                       <input type="text" class="form-control" name="content" id="content">
+                           <label for="name" class="form-label">Name researcher</label>
+                       <input type="text" class="form-control" name="name" id="name">
+                       <input type="submit" class="btn btn-primary mb-3" value="Add data">
+                   </form>
+               </div>
+           </div>
+{% endblock %}
